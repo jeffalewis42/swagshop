@@ -2,8 +2,13 @@ var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
-var db = mongoose.connect('mongodb://localhost/swagshop');
+var db = mongoose.connect('mongodb://localhost/swagshop', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+});
 
+////Bind connection to error event (to get notification of connection errors)
+//db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 var Product = require('./model/product');
 var WishList = require('./model/wishlist');
 
@@ -27,7 +32,21 @@ app.post('/product', function (request, response) {
     });
 });
 
+app.get('/product', function (request, response) {
 
+
+    Product.find({}, function (err, productlist) {
+
+        if (err) {
+            response.status(500).send({
+                error: "Could not retrieve product"
+            });
+        } else {
+            response.send(productlist);
+        }
+    });
+
+});
 
 
 
